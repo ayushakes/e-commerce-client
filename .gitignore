@@ -11,6 +11,9 @@
 # production
 /build
 
+# sensitive apis
+firebase.js
+
 # misc
 .DS_Store
 .env.local
