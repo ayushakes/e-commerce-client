@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { auth } from "../../firebase";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
-export default function Register() {
+const Register=({history})=> {
   const [email, setEmail] = React.useState("");
+
+   
+  const {user} = useSelector((state:any)=>({...state}))
+
+  useEffect(() => {
+     if(user && user.token) history.push('/');
+  }, [user,history]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,7 +27,7 @@ export default function Register() {
       `Email is sent to ${email}. Click the link to complete your registeration in your email `
     );
 
-    window.localStorage.setItem("emailForRegisteration", email); // storing the email so that user doesnt have to type it again
+    window.localStorage.setItem("emailForRegistration", email); // storing the email so that user doesnt have to type it again
 
     setEmail("");
   };
@@ -32,8 +41,10 @@ export default function Register() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           autoFocus
+          placeholder="Your Email"
         />
-        <button type="submit" className="btn btn-raised">
+        <br/>
+        <button type="submit" className="btn btn-raised" disabled={!email}>
           Register
         </button>
       </form>
@@ -48,3 +59,5 @@ export default function Register() {
     </div>
   );
 }
+
+export default Register;
