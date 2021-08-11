@@ -28,6 +28,10 @@ import AdminCategory from "./pages/admin/category/adminCategory";
 import AdminSubCategory from "./pages/admin/subCategory/adminSubCategory";
 import ProductCreate from "./pages/admin/product/productCreate";
 import AdminProducts from "./pages/admin/products/adminProducts";
+import ProductEdit from "./pages/admin/product/productEdit";
+import ProductDetails from "./pages/productDetails";
+import CategoryHome from "./pages/categoryHome";
+import SubCategoryHome from "./pages/subCategoryHome";
 
 function App() {
   const dispatch = useDispatch();
@@ -81,6 +85,10 @@ function App() {
         />
         <AdminRoute path="/admin/product" exact component={ProductCreate} />
         <AdminRoute path="/admin/products" exact component={AdminProducts} />
+        <AdminRoute path="/admin/product/:slug" exact component={ProductEdit} />
+        <Route path="/product/:slug" exact component={ProductDetails} />
+        <Route path="/category/:slug" exact component={CategoryHome} />
+        <Route path="/subCategory/:slug" exact component={SubCategoryHome} />
       </Switch>
     </>
   );

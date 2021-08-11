@@ -16,6 +16,10 @@ const Login = ({ history }) => {
   const { user } = useSelector((state: any) => ({ ...state }));
 
   const roleBasedRedirect = (res) => {
+    const intended = history.location.state;
+    if (intended) {
+      history.push(intended.from);
+    }
     if (res.data.role === UserType.ADMIN) {
       history.push("admin/dashboard"); // todo create these routes
     } else {
@@ -24,8 +28,12 @@ const Login = ({ history }) => {
   };
 
   useEffect(() => {
+    const intended = history.location.state;
+    if (intended) {
+      return;
+    }
     if (user && user.token) history.push("/");
-  }, [user,history]);
+  }, [user, history]);
 
   const dispatch = useDispatch();
   const handleSubmit = async (e) => {

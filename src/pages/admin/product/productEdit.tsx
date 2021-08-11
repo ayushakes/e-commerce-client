@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Field, Form } from "react-final-form";
 import { useSelector } from "react-redux";
 import AdminNav from "../../../components/nav/adminNav";
-import { createProduct } from "../../../functions/product";
+import { getProduct, updateProduct } from "../../../functions/product";
 import { toast } from "react-toastify";
 import {
   getCategories,
@@ -11,7 +11,7 @@ import {
 import { Select } from "antd";
 import FileUpload from "../../../components/fileUpload";
 
-const ProductCreate = () => {
+const ProductEdit = ({ match }) => {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
@@ -19,12 +19,12 @@ const ProductCreate = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const initialState = {
-    title: "",
-    description: "",
-    price: 0,
-    category: categories[0] || null,
+    category: categories[0],
     subCategories: [],
-    shipping: "Yes",
+    description: "",
+    title: "",
+    price: "",
+    shipping: false,
     quantity: 0,
     images: [],
   };
@@ -33,28 +33,41 @@ const ProductCreate = () => {
 
   useEffect(() => {
     loadCategories();
+
     return () => {};
   }, []);
 
-  const loadCategories = () =>
-    getCategories().then((res) => {
-      setCategories(res.data);
+  const loadProduct = () => {
+    getProduct(match.params.slug).then((response) => {
       setValues({
         ...values,
-        category: res.data && res.data.length ? res.data[0]._id : "",
+        ...response.data,
+        category: response.data.category._id,
       });
-      if (res.data && res.data.length) setSelectedCategory(res.data[0]);
 
-      if (res.data && res.data.length) {
-        getCatgorySubCategories(res.data[0]._id)
+      if (response.data) {
+        getCatgorySubCategories(response.data.category._id)
           .then((response) => {
-            console.log(response);
             setSubCategories(response.data);
           })
           .catch((err) => {
             console.log(err);
           });
       }
+
+      const subCategoriesIdArray = response.data.subCategories.map(
+        (s) => s._id
+      );
+
+      setSelectedSubCategories([...subCategoriesIdArray]);
+    });
+  };
+
+  const loadCategories = () =>
+    getCategories().then((res) => {
+      setCategories(res.data);
+
+      loadProduct();
     });
 
   const { user } = useSelector((state: any) => ({ ...state }));
@@ -64,12 +77,12 @@ const ProductCreate = () => {
 
     const formFinalValues = { ...values };
 
-    createProduct(formFinalValues, user.token)
+    updateProduct(match.params.slug, formFinalValues, user.token)
       .then((res) => {
-        toast.success("Product created successfully");
+        toast.success("Product updated successfully");
       })
       .catch((err) => {
-        toast.error("Product create failed");
+        toast.error("Product updation failed");
       });
   };
 
@@ -227,4 +240,4 @@ const ProductCreate = () => {
   );
 };
 
-export default ProductCreate;
+export default ProductEdit;

@@ -57,6 +57,7 @@ const FileUpload = (props: {
 
   const handleImageRemove = (imagePublicId) => {
     setLoading(true);
+    console.log("request to delete image");
     axios
       .post(
         `${process.env.REACT_APP_API}/removeimage`,
@@ -77,8 +78,10 @@ const FileUpload = (props: {
         });
         setValues({ ...values, images: filteredImages });
       })
-      .then((err) => {
-        console.log("error while removing uploaded images ", err);
+      .catch((err) => {
+        
+   toast.error("error while removing uploaded images")
+
         setLoading(false);
       });
   };
